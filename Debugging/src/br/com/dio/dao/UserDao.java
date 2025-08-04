@@ -3,6 +3,7 @@ package br.com.dio.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.dio.exception.EmptyStorageException;
 import br.com.dio.exception.UserNotFoundException;
 import br.com.dio.model.UserModel;
 
@@ -31,6 +32,7 @@ public class UserDao {
 	}
 	
 	public UserModel findById(final long id) {
+		verifyStorage();
 		var message = String.format("ID: %s não cadastrado", id);
 		return models.stream()
 		.filter(u -> u.getId() == id)
@@ -39,6 +41,18 @@ public class UserDao {
 	}
 	
 	public List<UserModel> findAll(){
-		return models;
+		List<UserModel> result;
+		try {
+			verifyStorage();
+			result = models;
+		}catch (EmptyStorageException ex) {
+			ex.printStackTrace();
+			result = new ArrayList<>(); 
+		}
+		return result;
+	}
+	
+	private void verifyStorage() {
+		if(models.isEmpty()) throw new EmptyStorageException("O armazenamento esta vazio");
 	}
 }

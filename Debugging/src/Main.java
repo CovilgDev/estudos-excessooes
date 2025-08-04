@@ -4,6 +4,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import br.com.dio.dao.UserDao;
+import br.com.dio.exception.EmptyStorageException;
+import br.com.dio.exception.UserNotFoundException;
 import br.com.dio.model.MenuOption;
 import br.com.dio.model.UserModel;
 
@@ -34,18 +36,37 @@ public class Main {
 					System.out.printf("Usuário cadastrado %s", user);
 				}
 				case UPDATE -> {
-					var user = dao.update(requestToUpdate());
-					System.out.printf("Usuário atualizado %s", user);
+					try {
+						var user = dao.update(requestToUpdate());
+						System.out.printf("Usuário atualizado %s", user);
+					}catch (UserNotFoundException | EmptyStorageException ex) {
+						System.out.println(ex.getMessage());
+					}finally {
+						System.out.println("====================");
+					}
 				}
 				case DELETE -> {
-					dao.delete(requestId());
-					System.out.println("Usuário excluido");
+					try {
+						dao.delete(requestId());
+						System.out.println("Usuário excluido");
+					}catch (UserNotFoundException | EmptyStorageException ex) {
+						System.out.println(ex.getMessage());
+					}finally {
+						System.out.println("====================");
+					}
 				}
 				case FIND_BY_ID -> {
-					var id = requestId();
-					var users = dao.findById(id);
-					System.out.printf("Usuários com id %s", id);
-					System.out.println(users);
+					try {
+						var id = requestId();
+						var users = dao.findById(id);
+						System.out.printf("Usuários com id %s", id);
+						System.out.println(users);
+					}catch (UserNotFoundException | EmptyStorageException ex) {
+						System.out.println(ex.getMessage());
+					}finally {
+						System.out.println("====================");
+					}
+					
 				}
 				case FIND_ALL -> {
 					var users = dao.findAll();
